@@ -1,2 +1,2 @@
 # GameOff2022
-Game Off 2022 game jam submission.
+itch.io Game Off 2022 game jam submission.
