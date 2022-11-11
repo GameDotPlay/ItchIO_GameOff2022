@@ -8,4 +8,7 @@ EditorBuildSettings:
   - enabled: 0
     path: 
     guid: 00000000000000000000000000000000
+  - enabled: 1
+    path: Assets/GameOff2022/_Levels/PlayerCameraAndControlTesting.unity
+    guid: cfa1be6812b48bd409c9954394f6832a
   m_configObjects: {}
