@@ -19,8 +19,8 @@ namespace LighterThanAir
 
         [SerializeField] private Transform targetTransform;
         [SerializeField] private float flyingSpeed = 10.0f;
-        [SerializeField]  private float yawRate = 2.0f;
-        [SerializeField]  private float rollRate = 5.0f;
+        [SerializeField] private float yawRate = 2.0f;
+        [SerializeField] private float rollRate = 5.0f;
         [SerializeField] private float distanceToFlyPast = 20.0f;
         [SerializeField] private float maxRollAngle = 30.0f;
         [SerializeField] private float tooCloseToAttack = 10.0f;
