@@ -34,47 +34,49 @@ namespace LighterThanAir
             yOffset = Vector3.up * transform.position.y;
         }
 
-        void Update()
+        void LateUpdate()
         {
-            SetNextTurnDirection();
+            this.SetNextTurnDirection();
 
-            if (TooCloseToAttack())
+            if (this.TooCloseToAttack())
             {
-                SwitchState(State.FlyingPastTarget);
+                this.SwitchState(State.FlyingPastTarget);
             }
             
-            switch (currentState)
+            switch (this.currentState)
             {
                 case State.AcquiringTarget:
-                    AcquireTarget();
+                    this.AcquireTarget();
                     break;
 
                 case State.LockedOnTarget:
-                    FlyAtTarget();
                     break;
 
                 case State.FlyingPastTarget:
-                    FlyPastTarget();
+                    this.FlyPastTarget();
                     break;
 
                 default:
                     break;
             }
 
-            // Fly forward.
-            this.transform.Translate(Vector3.forward * flyingSpeed * Time.deltaTime);
-
-            DrawHelpers();
+            this.FlyForward();
+            this.DrawHelpers();
         }
+		
+		private void FlyForward()
+		{
+			this.transform.Translate(Vector3.forward * flyingSpeed * Time.deltaTime, Space.World);
+		}
 
         private void AcquireTarget()
         {
             // Determine which direction to rotate towards
-            Vector3 targetDirection = (targetTransform.position - transform.position) + yOffset;
+            Vector3 targetDirection = ((targetTransform.position - transform.position) + yOffset).normalized;
 
             // Get delta angle between current forward vector and the vector towards target.
-            float angleDiff = Vector3.Angle(transform.forward, targetDirection);
-            if (angleDiff < Mathf.Epsilon)
+            float angleDiff = Vector3.SignedAngle(transform.forward, targetDirection, Vector3.up);
+            if (angleDiff <= Mathf.Epsilon)
             {
                 SwitchState(State.LockedOnTarget);
                 return;
@@ -90,17 +92,12 @@ namespace LighterThanAir
             transform.rotation = Quaternion.LookRotation(newDirection);
         }
 
-        private void FlyAtTarget()
-        {
-            
-        }
-
         private void FlyPastTarget()
         {
             float distanceToTarget = ((targetTransform.position - transform.position) + yOffset).magnitude;
-            if (distanceToTarget > distanceToFlyPast)
+            if (distanceToTarget >= distanceToFlyPast)
             {
-                SwitchState(State.AcquiringTarget);
+                this.SwitchState(State.AcquiringTarget);
             }
         }
 
@@ -114,14 +111,12 @@ namespace LighterThanAir
 
         private void SwitchState(State newState)
         {
-            currentState = newState;
+            this.currentState = newState;
         }
 
         private bool TooCloseToAttack()
         {
-            float distanceToTarget = ((targetTransform.position - transform.position) + yOffset).magnitude;
-
-            return distanceToTarget < tooCloseToAttack ? true : false;
+            return Vector3.Distance(targetTransform.position + yOffset, transform.position) < tooCloseToAttack ? true : false;
         }
 
         private float NormalizeValue(float value, float min, float max)
@@ -131,14 +126,17 @@ namespace LighterThanAir
 
         private void SetNextTurnDirection()
         {
-            if (transform.rotation.eulerAngles.y >= 180.0f)
-            {
-                nextTurnDirection = TurnDirection.Right;
-            }
-            else
-            {
-                nextTurnDirection = TurnDirection.Left;
-            }
-        }
+            Vector3 targetDirection = (targetTransform.position - transform.position) + yOffset;
+			Vector3 cross = Vector3.Cross(transform.position, targetDirection);
+			
+			if (cross.z <= 0)
+			{
+				nextTurnDirection = TurnDirection.Right;
+			}
+			else
+			{
+				nextTurnDirection = TurnDirection.Left;
+			}
+		}
     }
 }
