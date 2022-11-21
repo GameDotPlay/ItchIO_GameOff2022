@@ -61,12 +61,13 @@ namespace LighterThanAir
             }
 
             this.FlyForward();
-            this.DrawHelpers();
+            //this.DrawHelpers();
+            //Debug.Log(this.currentState);
         }
 		
 		private void FlyForward()
 		{
-			this.transform.Translate(Vector3.forward * flyingSpeed * Time.deltaTime, Space.World);
+			this.transform.Translate(Vector3.forward * flyingSpeed * Time.deltaTime, Space.Self);
 		}
 
         private void AcquireTarget()
@@ -76,7 +77,7 @@ namespace LighterThanAir
 
             // Get delta angle between current forward vector and the vector towards target.
             float angleDiff = Vector3.SignedAngle(transform.forward, targetDirection, Vector3.up);
-            if (angleDiff <= Mathf.Epsilon)
+            if (Mathf.Abs(angleDiff) <= Mathf.Epsilon)
             {
                 SwitchState(State.LockedOnTarget);
                 return;
