@@ -8,8 +8,8 @@ namespace LighterThanAir
     public class PlayerController : MonoBehaviour
     {
         [SerializeField] private float mouseScrollSensitivity = 1.0f;
-        [SerializeField] private float minimumCameraDistance = 8.0f;
-        [SerializeField] private float maximumCameraDistance = 50.0f;
+        [SerializeField] private float minimumCameraDistance = 150.0f;
+        [SerializeField] private float maximumCameraDistance = 300.0f;
 
         private CinemachineVirtualCamera vcam;
         private CinemachineFramingTransposer framingTransposer;
