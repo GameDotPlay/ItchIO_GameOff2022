@@ -4,7 +4,7 @@ namespace LighterThanAir
 {
     public class FlyTowards : MonoBehaviour
     {
-        private enum State
+        public enum State
         {
             LockedOnTarget,
             FlyingPastTarget,
@@ -17,6 +17,8 @@ namespace LighterThanAir
             Right = 1
         };
 
+        public State CurrentState { get; private set; }
+
         [SerializeField] private Transform targetTransform;
         [SerializeField] private float flyingSpeed = 10.0f;
         [SerializeField] private float yawRate = 2.0f;
@@ -26,12 +28,12 @@ namespace LighterThanAir
         [SerializeField] private float tooCloseToAttack = 10.0f;
 
         private Vector3 yOffset;
-        private State currentState = State.AcquiringTarget;
         private TurnDirection nextTurnDirection = TurnDirection.Right;
 
         void Start()
         {
             yOffset = Vector3.up * transform.position.y;
+            this.CurrentState = State.AcquiringTarget;
         }
 
         void LateUpdate()
@@ -42,8 +44,8 @@ namespace LighterThanAir
             {
                 this.SwitchState(State.FlyingPastTarget);
             }
-            
-            switch (this.currentState)
+
+            switch (this.CurrentState)
             {
                 case State.AcquiringTarget:
                     this.AcquireTarget();
@@ -61,14 +63,12 @@ namespace LighterThanAir
             }
 
             this.FlyForward();
-            //this.DrawHelpers();
-            //Debug.Log(this.currentState);
         }
-		
-		private void FlyForward()
-		{
-			this.transform.Translate(Vector3.forward * flyingSpeed * Time.deltaTime, Space.Self);
-		}
+
+        private void FlyForward()
+        {
+            this.transform.Translate(Vector3.forward * flyingSpeed * Time.deltaTime, Space.Self);
+        }
 
         private void AcquireTarget()
         {
@@ -112,7 +112,7 @@ namespace LighterThanAir
 
         private void SwitchState(State newState)
         {
-            this.currentState = newState;
+            this.CurrentState = newState;
         }
 
         private bool TooCloseToAttack()
@@ -128,16 +128,16 @@ namespace LighterThanAir
         private void SetNextTurnDirection()
         {
             Vector3 targetDirection = (targetTransform.position - transform.position) + yOffset;
-			Vector3 cross = Vector3.Cross(transform.position, targetDirection);
-			
-			if (cross.z <= 0)
-			{
-				nextTurnDirection = TurnDirection.Right;
-			}
-			else
-			{
-				nextTurnDirection = TurnDirection.Left;
-			}
-		}
+            Vector3 cross = Vector3.Cross(transform.position, targetDirection);
+
+            if (cross.z <= 0)
+            {
+                nextTurnDirection = TurnDirection.Right;
+            }
+            else
+            {
+                nextTurnDirection = TurnDirection.Left;
+            }
+        }
     }
 }
