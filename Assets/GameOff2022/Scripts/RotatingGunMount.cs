@@ -4,9 +4,10 @@ namespace LighterThanAir
 {
     public class RotatingGunMount : MonoBehaviour
     {
-        [SerializeField] private GameObject target;
-        [SerializeField] private float yawRate = 3.0f;
         [SerializeField] private float fireAngleRange = 150.0f;
+
+        public GameObject Target { get; set; }
+        public float YawRate { get; set; }
 
         private Vector3 initialRotation;
 
@@ -15,23 +16,18 @@ namespace LighterThanAir
             initialRotation = this.transform.rotation.eulerAngles;
         }
 
-        private void Update()
-        {
-
-        }
-
         private void LateUpdate()
         {
-            if (target == null)
+            if (Target == null)
             {
                 return;
             }
 
-            Vector3 direction = ((target.transform.position - transform.position) - (Vector3.up * target.transform.position.y)).normalized;
+            Vector3 direction = ((Target.transform.position - transform.position) - (Vector3.up * Target.transform.position.y)).normalized;
 
             Quaternion goalRotation = Quaternion.LookRotation(direction);
 
-            transform.rotation = Quaternion.Slerp(transform.rotation, goalRotation, yawRate);
+            transform.rotation = Quaternion.Slerp(transform.rotation, goalRotation, YawRate);
 
             ClampRotationAngle();
         }
