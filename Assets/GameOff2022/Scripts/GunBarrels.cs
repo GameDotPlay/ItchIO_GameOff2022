@@ -5,11 +5,11 @@ namespace LighterThanAir
 {
     public class GunBarrels : MonoBehaviour
     {
-        [SerializeField] private GameObject target;
-        [SerializeField] private float pitchRate = 3.0f;
         [SerializeField] private float fireAngleRange = 80.0f;
 
-        private List<GameObject> enemiesInRange = new List<GameObject>();
+        public GameObject Target { get; set; }
+        public float PitchRate { get; set; }
+        
         private Vector3 initialRotation;
 
         private void Start()
@@ -17,24 +17,19 @@ namespace LighterThanAir
             initialRotation = transform.rotation.eulerAngles;
         }
 
-        private void Update()
-        {
-
-        }
-
         private void LateUpdate()
         {
-            if (target == null)
+            if (Target == null)
             {
                 return;
             }
 
             Vector3 inheritedRotation = transform.rotation.eulerAngles;
-            Vector3 direction = (target.transform.position - transform.position).normalized;
+            Vector3 direction = (Target.transform.position - transform.position).normalized;
 
             Quaternion goalRotation = Quaternion.LookRotation(direction);
 
-            transform.rotation = Quaternion.Slerp(transform.rotation, goalRotation, pitchRate);
+            transform.rotation = Quaternion.Slerp(transform.rotation, goalRotation, PitchRate);
             transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles.x, inheritedRotation.y, inheritedRotation.z);
 
             Debug.Log(transform.rotation.eulerAngles.x);
