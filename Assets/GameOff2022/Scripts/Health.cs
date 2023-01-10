@@ -4,12 +4,14 @@ namespace LighterThanAir
 {
     public class Health : MonoBehaviour
     {
-        [SerializeField] private float maxHealth;
+        [SerializeField] private float baseMaxHealth;
+        [SerializeField] private float currentMaxHealth;
         [SerializeField] private float currentHealth;
 
         private void Start()
         {
-            this.currentHealth = this.maxHealth;
+            this.currentMaxHealth = baseMaxHealth;
+            this.currentHealth = currentMaxHealth;
         }
 
         public float ModifyHealth(float value)
@@ -17,9 +19,29 @@ namespace LighterThanAir
             return this.currentHealth + value;
         }
 
-        public float ModifyMaxHealth(float value)
+        public void MaxHealthMultiplier(float value)
         {
-            return this.maxHealth + value;
+            this.currentMaxHealth *= value;
+        }
+
+        public void SetMaxHealth(float value)
+        {
+            this.currentMaxHealth = value;
+        }
+
+        public void SetBaseMaxHealth(float value)
+        {
+            this.baseMaxHealth = value;
+        }
+
+        public void SetHealth(float value)
+        {
+            if (value > this.currentMaxHealth)
+            {
+                this.currentMaxHealth = value;
+            }
+
+            this.currentHealth = value;
         }
     }
 }
