@@ -5,47 +5,61 @@ namespace LighterThanAir
 {
     public class GunBarrels : MonoBehaviour
     {
-        [SerializeField] private float fireAngleRange = 80.0f;
+		#region Property Panel
+		[SerializeField] private GameObject target;
+		[SerializeField] private float fireAngleRange = 45.0f;
+		[SerializeField] private float pitchRate = 1.0f;
+		[SerializeField] private bool clampRotation = true;
+		#endregion
 
-        public GameObject Target { get; set; }
-        public float PitchRate { get; set; }
-        
-        private Vector3 initialRotation;
+		#region Public
+		#endregion
 
-        private void Start()
+		#region Private
+		private Vector3 initialRotation;
+		private Vector3 initialForward;
+		private float dotProductLimit;
+		#endregion
+
+		private void Start()
         {
-            initialRotation = transform.rotation.eulerAngles;
-        }
+			this.initialRotation = this.transform.rotation.eulerAngles;
+			this.initialForward = this.transform.forward;
+			Transform maxAngleTransform = this.transform;
+			maxAngleTransform.rotation = Quaternion.Euler(this.initialRotation.x + this.fireAngleRange, this.initialRotation.y, this.initialRotation.z);
+
+			this.dotProductLimit = Vector3.Dot(this.initialForward, maxAngleTransform.forward);
+		}
 
         private void LateUpdate()
         {
-            if (Target == null)
+            if (this.target == null)
             {
                 return;
             }
 
-            Vector3 inheritedRotation = transform.rotation.eulerAngles;
-            Vector3 direction = (Target.transform.position - transform.position).normalized;
+            Vector3 inheritedRotation = this.transform.rotation.eulerAngles;
+			Vector3 direction = (this.target.transform.position - this.transform.position).normalized;
 
             Quaternion goalRotation = Quaternion.LookRotation(direction);
 
-            transform.rotation = Quaternion.Slerp(transform.rotation, goalRotation, PitchRate);
-            transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles.x, inheritedRotation.y, inheritedRotation.z);
+            this.transform.rotation = Quaternion.Slerp(this.transform.rotation, goalRotation, this.pitchRate);
+            this.transform.rotation = Quaternion.Euler(this.transform.rotation.eulerAngles.x, inheritedRotation.y, inheritedRotation.z);
 
-            Debug.Log(transform.rotation.eulerAngles.x);
-            ClampRotationAngle();
+            this.ClampRotationAngle(inheritedRotation, direction);
         }
 
-        private void ClampRotationAngle()
+        private void ClampRotationAngle(Vector3 lastRotation, Vector3 direction)
         {
-            if (transform.rotation.eulerAngles.x - initialRotation.x > fireAngleRange / 2)
-            {
-                transform.rotation = Quaternion.Euler(initialRotation.x + (fireAngleRange / 2), transform.rotation.eulerAngles.y, transform.rotation.eulerAngles.z);
-            }
-            else if (initialRotation.y + transform.rotation.eulerAngles.x < fireAngleRange)
-            {
-                transform.rotation = Quaternion.Euler(initialRotation.x - (fireAngleRange / 2), transform.rotation.eulerAngles.y, transform.rotation.eulerAngles.z);
-            }
+			if (Vector3.Dot(this.initialForward, direction) < this.dotProductLimit)
+			{
+				this.transform.rotation = Quaternion.Euler(lastRotation.x, this.transform.rotation.eulerAngles.y, this.transform.rotation.eulerAngles.z);
+			}
+		}
+
+        public void SetTarget(GameObject target)
+        {
+			this.target = target;
         }
     }
 }
